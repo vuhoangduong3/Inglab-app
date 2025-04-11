@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    hikari:
+      maximum-pool-size: 200
+      minimum-idle: 2
+      connection-timeout: 50000
+      idle-timeout: 10000
+      max-lifetime: 900000
+      driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+jackson:
+  serialization:
+    WRITE_DATES_AS_TIMESTAMPS: false
+logging:
+  level:
+    org.springframework: ERROR
+    unicorns.backend: DEBUG
+    org.hibernate.engine.jdbc.env.internal: ERROR
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

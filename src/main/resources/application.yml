@@ -1,0 +1,9 @@
+spring:
+  profiles:
+    active: deploy
+    include: common
+
+server:
+  port: 8080
+  servlet:
+    context-path: /backend/
