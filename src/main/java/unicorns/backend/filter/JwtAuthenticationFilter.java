@@ -1,4 +1,4 @@
-package unicorns.backend.util;
+package unicorns.backend.filter;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -14,6 +14,10 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import unicorns.backend.util.ApplicationCode;
+import unicorns.backend.util.ApplicationException;
+import unicorns.backend.util.JwtUtil;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -36,11 +40,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             try {
+                if (token == null ||token.trim().isEmpty()) {
+                    throw new ApplicationException(ApplicationCode.INVALID_TOKEN);
+                }
                 username = jwtUtil.getUsernameFromToken(token);
             } catch (ExpiredJwtException | MalformedJwtException e) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("Invalid or expired token");
-                return;
+                throw new ApplicationException(ApplicationCode.INVALID_TOKEN);
             }
         }
 
