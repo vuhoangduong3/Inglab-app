@@ -19,10 +19,22 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 @Log4j2
 public class GlobalExceptionHandler {
+    private static final Map<Integer, HttpStatus> ERROR_CODE_TO_HTTP_STATUS = new HashMap<>();
+
+    static {
+        ERROR_CODE_TO_HTTP_STATUS.put(ApplicationCode.SUCCESS, HttpStatus.OK);
+        ERROR_CODE_TO_HTTP_STATUS.put(ApplicationCode.UNKNOWN_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+        ERROR_CODE_TO_HTTP_STATUS.put(ApplicationCode.USER_DEACTIVATE, HttpStatus.BAD_REQUEST);
+        ERROR_CODE_TO_HTTP_STATUS.put(ApplicationCode.USER_EXITS, HttpStatus.CONFLICT);
+        ERROR_CODE_TO_HTTP_STATUS.put(ApplicationCode.INPUT_INVALID, HttpStatus.UNAUTHORIZED);
+        ERROR_CODE_TO_HTTP_STATUS.put(ApplicationCode.INVALID_PASSWORD, HttpStatus.UNAUTHORIZED);
+        ERROR_CODE_TO_HTTP_STATUS.put(ApplicationCode.INVALID_TOKEN, HttpStatus.FORBIDDEN);
+    }
     @ExceptionHandler({ApplicationException.class})
     public ResponseEntity<BaseResponse> handleResponseException(ApplicationException e, HttpServletRequest request) {
-        log.error("Failed to handle request " + request.getRequestURI() + ": " + e.getMessage(), e);
-        return ResponseEntity.status(HttpStatus.OK)
+        log.error("Failed to handle request {}: {}", request.getRequestURI(), e.getMessage(), e);
+        HttpStatus status = ERROR_CODE_TO_HTTP_STATUS.getOrDefault(e.getCode(), HttpStatus.OK);
+        return ResponseEntity.status(status)
                 .body(new BaseResponse(e.getCode(), e.getMessage()));
     }
 
