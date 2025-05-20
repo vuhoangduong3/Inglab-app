@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import unicorns.backend.dto.request.BaseRequest;
 import unicorns.backend.dto.request.CreateUserRequest;
@@ -26,11 +27,12 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     UserRepository userRepository;
+    BCryptPasswordEncoder passwordEncoder;
 
     @Override
     public BaseResponse<CreateUserResponse> createUser(BaseRequest<CreateUserRequest> request) {
         CreateUserRequest createUserRequest = request.getWsRequest();
-        Optional<User> userOptional = userRepository.findByUsername(createUserRequest.getUsername());
+        Optional<User> userOptional = userRepository.findByUsername(createUserRequest.  getUsername());
         if (userOptional.isPresent()) {
             User userExists = userOptional.get();
             if (Const.STATUS.DEACTIVATE.equals(userExists.getStatus())) {
@@ -40,6 +42,7 @@ public class UserServiceImpl implements UserService {
         }
         User user = new User();
         BeanUtils.copyProperties(createUserRequest, user);
+        user.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
         user.setStatus(Const.STATUS.ACTIVE);
         userRepository.save(user);
         BaseResponse baseResponse = BaseResponse.success();
