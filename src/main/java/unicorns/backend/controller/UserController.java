@@ -44,5 +44,6 @@ public class UserController {
     public BaseResponse<CreateUserResponse> createUser(@Valid @RequestBody BaseRequest<CreateUserRequest> request) {
         return userService.createUser(request);
     }
+
 }
 
