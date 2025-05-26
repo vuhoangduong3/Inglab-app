@@ -1,15 +1,19 @@
 package unicorns.backend.service.impl;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import unicorns.backend.dto.request.BaseRequest;
 import unicorns.backend.dto.request.CreateUserRequest;
+import unicorns.backend.dto.request.UpdateProfileRequest;
 import unicorns.backend.dto.response.BaseResponse;
 import unicorns.backend.dto.response.CreateUserResponse;
+import unicorns.backend.dto.response.UpdateProfileResponse;
 import unicorns.backend.entity.User;
 import unicorns.backend.repository.UserRepository;
 import unicorns.backend.service.UserService;
@@ -32,7 +36,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public BaseResponse<CreateUserResponse> createUser(BaseRequest<CreateUserRequest> request) {
         CreateUserRequest createUserRequest = request.getWsRequest();
-        Optional<User> userOptional = userRepository.findByUsername(createUserRequest.  getUsername());
+        Optional<User> userOptional = userRepository.findByUsername(createUserRequest.getUsername());
         if (userOptional.isPresent()) {
             User userExists = userOptional.get();
             if (Const.STATUS.DEACTIVATE.equals(userExists.getStatus())) {
@@ -66,5 +70,36 @@ public class UserServiceImpl implements UserService {
         BaseResponse baseResponse = BaseResponse.success();
         baseResponse.setWsResponse(createUserResponseList);
         return baseResponse;
+    }
+
+    @Override
+    public BaseResponse<UpdateProfileResponse> updateProfile(BaseRequest<UpdateProfileRequest> updateprofilerequest) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        UpdateProfileRequest request = updateprofilerequest.getWsRequest();
+        Optional<User> userOptional = userRepository.findByUsername(username);
+        if (request.getUsername() != null && !request.getUsername().equals(username)) {
+            throw new ApplicationException(ApplicationCode.INVALID_TOKEN);
+        }
+
+        if (userOptional.isEmpty()) {
+            throw new ApplicationException(ApplicationCode.USER_NOT_FOUND);
+        }
+        User user = userOptional.get();
+        if (request.getName() != null && !request.getName().isEmpty()) {
+            user.setName(request.getName());
+        }
+        if (request.getEmail() != null && !request.getEmail().isEmpty()) {
+            user.setEmail(request.getEmail());
+        }
+        if (request.getDateOfBirth() != null) {
+            user.setDateOfBirth(request.getDateOfBirth());
+        }
+        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+        userRepository.save(user);
+        BaseResponse<UpdateProfileResponse> response = new BaseResponse<>(ApplicationCode.SUCCESS);
+        response.setWsResponse(UpdateProfileResponse.from(user));
+        return response;
     }
 }

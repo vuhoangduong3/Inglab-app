@@ -28,7 +28,4 @@ public class User extends BaseEntity {
     Integer status;
 
 
-    public String getPassword() {
-        return password;
-    }
 }

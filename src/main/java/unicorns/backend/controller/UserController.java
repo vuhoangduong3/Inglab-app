@@ -9,12 +9,17 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import unicorns.backend.dto.request.BaseRequest;
 import unicorns.backend.dto.request.CreateUserRequest;
+import unicorns.backend.dto.request.UpdateProfileRequest;
 import unicorns.backend.dto.response.BaseResponse;
 import unicorns.backend.dto.response.CreateUserResponse;
+import unicorns.backend.dto.response.UpdateProfileResponse;
 import unicorns.backend.service.UserService;
+import unicorns.backend.util.ApplicationCode;
 import unicorns.backend.util.Const;
 
 @RestController
@@ -44,6 +49,12 @@ public class UserController {
     public BaseResponse<CreateUserResponse> createUser(@Valid @RequestBody BaseRequest<CreateUserRequest> request) {
         return userService.createUser(request);
     }
+
+    @PutMapping("me/updateProfile")
+    public BaseResponse<UpdateProfileResponse> updateProfile(@Valid @RequestBody BaseRequest<UpdateProfileRequest> request) {
+        return userService.updateProfile(request);
+    }
+
 
 }
 
