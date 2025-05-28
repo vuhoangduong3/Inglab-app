@@ -17,6 +17,7 @@ public class ApplicationCode {
     public static final int INPUT_INVALID = 4;
     public static final int INVALID_PASSWORD = 5;
     public static final int INVALID_TOKEN = 6;
+    public static final int USER_NOT_FOUND = 7;
 
     private static final Map<Integer, String> msg = new HashMap<>();
 
@@ -28,6 +29,7 @@ public class ApplicationCode {
         msg.put(INPUT_INVALID, "INPUT_INVALID");
         msg.put(INVALID_PASSWORD, "INVALID_PASSWORD");
         msg.put(INVALID_TOKEN, "INVALID_TOKEN");
+        msg.put(USER_NOT_FOUND, "USER_NOT_FOUND");
     }
 
     public static String getMessage(int code, String language) {

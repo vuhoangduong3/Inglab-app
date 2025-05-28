@@ -4,6 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import unicorns.backend.dto.request.BaseRequest;
+import unicorns.backend.dto.request.LoginRequest;
+import unicorns.backend.dto.request.LogoutRequest;
+import unicorns.backend.dto.response.BaseResponse;
 import unicorns.backend.dto.response.LoginResponse;
 import unicorns.backend.entity.TokenBlacklist;
 import unicorns.backend.entity.User;
@@ -13,6 +17,8 @@ import unicorns.backend.service.AuthService;
 import unicorns.backend.util.ApplicationCode;
 import unicorns.backend.util.ApplicationException;
 import unicorns.backend.util.JwtUtil;
+
+import java.util.Objects;
 
 @Service
 @Data
@@ -24,7 +30,11 @@ public class AuthServiceImpl implements AuthService {
     private final TokenBlacklistRepository tokenBlacklistRepository;
 
     @Override
-    public LoginResponse login(String username, String password) throws ApplicationException {
+    public BaseResponse<LoginResponse> login(BaseRequest<LoginRequest> loginRequest) throws ApplicationException {
+        LoginRequest request = loginRequest.getWsRequest();
+        String username = request.getUsername();
+        String password = request.getPassword();
+
         if (username == null || username.isBlank() || password == null || password.isBlank()) {
             throw new ApplicationException(ApplicationCode.INPUT_INVALID);
         }
@@ -37,11 +47,20 @@ public class AuthServiceImpl implements AuthService {
         }
 
         String token = jwtUtil.generateToken(username);
-        return new LoginResponse(token);
+        LoginResponse loginResponse = new LoginResponse(token);
+        BaseResponse<LoginResponse> response = new BaseResponse<>(ApplicationCode.SUCCESS);
+        response.setWsResponse(loginResponse);
+
+        return response;
     }
     @Override
-    public void logout(String authHeader) throws ApplicationException {
-        if (authHeader == null || authHeader.isEmpty()) {
+    public BaseResponse<?> logout(BaseRequest<LogoutRequest> logoutRequest) throws ApplicationException {
+
+        LogoutRequest request = logoutRequest.getWsRequest();
+        String username = request.getUsername();
+        String authHeader = request.getAuthHeader();
+
+        if (username == null || username.isEmpty()||authHeader == null || authHeader.isEmpty()) {
             throw new ApplicationException(ApplicationCode.INVALID_TOKEN);
         }
 
@@ -50,10 +69,18 @@ public class AuthServiceImpl implements AuthService {
             throw new ApplicationException(ApplicationCode.INVALID_TOKEN);
         }
 
+        if(!Objects.equals(username, jwtUtil.getUsernameFromToken(token))){
+            throw new ApplicationException(ApplicationCode.INVALID_TOKEN);
+        }
+
         TokenBlacklist blacklistedToken = new TokenBlacklist();
         blacklistedToken.setToken(token);
         blacklistedToken.setExpiryDate(jwtUtil.getExpiryDate(token));
         tokenBlacklistRepository.save(blacklistedToken);
+
+        BaseResponse<?> response = new BaseResponse<>(ApplicationCode.SUCCESS);
+        response.setWsResponse(null);
+        return response;
     }
 }
 

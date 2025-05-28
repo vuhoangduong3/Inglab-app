@@ -29,6 +29,7 @@ public class GlobalExceptionHandler {
         ERROR_CODE_TO_HTTP_STATUS.put(ApplicationCode.INPUT_INVALID, HttpStatus.UNAUTHORIZED);
         ERROR_CODE_TO_HTTP_STATUS.put(ApplicationCode.INVALID_PASSWORD, HttpStatus.UNAUTHORIZED);
         ERROR_CODE_TO_HTTP_STATUS.put(ApplicationCode.INVALID_TOKEN, HttpStatus.FORBIDDEN);
+        ERROR_CODE_TO_HTTP_STATUS.put(ApplicationCode.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
     @ExceptionHandler({ApplicationException.class})
     public ResponseEntity<BaseResponse> handleResponseException(ApplicationException e, HttpServletRequest request) {
