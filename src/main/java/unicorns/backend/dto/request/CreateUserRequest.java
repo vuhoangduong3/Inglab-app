@@ -30,4 +30,8 @@ public class CreateUserRequest {
     @Schema(description = "Email can not blank")
     @NotBlank(message = "Email can not blank")
     String email;
+
+    @Schema(description = "Role can not blank")
+    @NotBlank(message = "Role can not blank")
+    String role;
 }

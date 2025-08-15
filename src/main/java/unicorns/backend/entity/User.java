@@ -26,6 +26,7 @@ public class User extends BaseEntity {
     Boolean changeFirstPass;
     Integer countFail;
     Integer status;
+    String role;
 
 
 }

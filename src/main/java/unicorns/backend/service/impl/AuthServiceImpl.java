@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import unicorns.backend.dto.request.BaseRequest;
 import unicorns.backend.dto.request.LoginRequest;
 import unicorns.backend.dto.request.LogoutRequest;
+import unicorns.backend.dto.request.RefreshTokenRequest;
 import unicorns.backend.dto.response.BaseResponse;
 import unicorns.backend.dto.response.LoginResponse;
 import unicorns.backend.entity.TokenBlacklist;
@@ -46,13 +47,40 @@ public class AuthServiceImpl implements AuthService {
             throw new ApplicationException(ApplicationCode.INVALID_PASSWORD);
         }
 
-        String token = jwtUtil.generateToken(username);
-        LoginResponse loginResponse = new LoginResponse(token);
+        String accessToken = jwtUtil.generateAccessToken(username, user.getRole());
+        String refreshToken = jwtUtil.generateRefreshToken(username, user.getRole());
+
+        LoginResponse loginResponse = new LoginResponse(accessToken, refreshToken, user.getRole());
         BaseResponse<LoginResponse> response = new BaseResponse<>(ApplicationCode.SUCCESS);
         response.setWsResponse(loginResponse);
 
         return response;
     }
+
+    @Override
+    public BaseResponse<LoginResponse> refreshToken(BaseRequest<RefreshTokenRequest> RefreshTokenRequest) throws ApplicationException {
+        String refreshToken = RefreshTokenRequest.getWsRequest().getRefreshToken();
+            if (refreshToken == null || refreshToken.isBlank()) {
+                throw new ApplicationException(ApplicationCode.INPUT_INVALID);
+            }
+
+            if (!jwtUtil.validateToken(refreshToken)) {
+                throw new ApplicationException(ApplicationCode.INVALID_TOKEN);
+            }
+
+        String username = jwtUtil.getUsernameFromToken(refreshToken);
+        String role = jwtUtil.extractRole(refreshToken);
+
+        String newAccessToken = jwtUtil.generateAccessToken(username, role);
+
+        LoginResponse loginResponse = new LoginResponse(newAccessToken, refreshToken, role);
+        BaseResponse<LoginResponse> response = new BaseResponse<>(ApplicationCode.SUCCESS);
+        response.setWsResponse(loginResponse);
+
+        return response;
+    }
+
+
     @Override
     public BaseResponse<?> logout(BaseRequest<LogoutRequest> logoutRequest) throws ApplicationException {
 

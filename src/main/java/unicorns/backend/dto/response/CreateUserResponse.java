@@ -12,6 +12,6 @@ public class CreateUserResponse {
     String username;
     String name;
     String email;
+    String role;
     LocalDateTime createdAt;
-
 }

@@ -1,15 +1,13 @@
-package unicorns.backend.dto.response;
+package unicorns.backend.dto.request;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
-@Data
 @AllArgsConstructor
+@Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class LoginResponse {
-    private String Accesstoken;
-    private String Refreshtoken;
-    private String role;
+public class RefreshTokenRequest {
+    String refreshToken;
 }

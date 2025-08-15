@@ -9,8 +9,6 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import unicorns.backend.dto.request.BaseRequest;
 import unicorns.backend.dto.request.CreateUserRequest;
@@ -19,7 +17,6 @@ import unicorns.backend.dto.response.BaseResponse;
 import unicorns.backend.dto.response.CreateUserResponse;
 import unicorns.backend.dto.response.UpdateProfileResponse;
 import unicorns.backend.service.UserService;
-import unicorns.backend.util.ApplicationCode;
 import unicorns.backend.util.Const;
 
 @RestController
@@ -50,6 +47,12 @@ public class UserController {
         return userService.createUser(request);
     }
 
+    @Operation(summary = "Update user profile", description = "Updates profile of the currently logged-in user.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Profile updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input",
+                    content = @Content(schema = @Schema(implementation = BaseResponse.class)))
+    })
     @PutMapping("me/updateProfile")
     public BaseResponse<UpdateProfileResponse> updateProfile(@Valid @RequestBody BaseRequest<UpdateProfileRequest> request) {
         return userService.updateProfile(request);

@@ -14,14 +14,30 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secret;
 
-    @Value("${jwt.expiration}")
-    private long expiration;
+    @Value("${jwt.accessExpiration}")
+    private long accessExpiration;
 
-    public String generateToken(String username) {
+    @Value("${jwt.refreshExpiration}")
+    private long refreshExpiration;
+
+    public String generateAccessToken(String username, String role) {
         return Jwts.builder()
                 .setSubject(username)
+                .claim("role", role)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .setExpiration(new Date(System.currentTimeMillis() + accessExpiration))
+                .signWith(SignatureAlgorithm.HS512, secret)
+                .compact();
+    }
+
+
+
+    public String generateRefreshToken(String username, String role) {
+        return Jwts.builder()
+                .setSubject(username)
+                .claim("role", role)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + refreshExpiration))
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
     }
@@ -49,6 +65,12 @@ public class JwtUtil {
         }
         return null;
     }
+
+    public String extractRole(String token) {
+        return Jwts.parser().setSigningKey(secret)
+                .parseClaimsJws(token).getBody().get("role", String.class);
+    }
+
     private Claims getClaims(String token) {
         if (token == null || token.trim().isEmpty()) {
             throw new IllegalArgumentException("Token cannot be null or empty");
