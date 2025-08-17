@@ -1,6 +1,6 @@
 package unicorns.backend.service.impl;
 
-import jakarta.servlet.http.HttpServletRequest;
+import unicorns.backend.util.JwtUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -8,6 +8,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestHeader;
 import unicorns.backend.dto.request.BaseRequest;
 import unicorns.backend.dto.request.CreateUserRequest;
 import unicorns.backend.dto.request.UpdateProfileRequest;
@@ -29,12 +30,21 @@ import java.util.Optional;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-
+    JwtUtil jwtUtil;
     UserRepository userRepository;
     BCryptPasswordEncoder passwordEncoder;
 
     @Override
-    public BaseResponse<CreateUserResponse> createUser(BaseRequest<CreateUserRequest> request) {
+    public BaseResponse<CreateUserResponse> createUser(@RequestHeader("Authorization") String AuthHeader,
+                                                       BaseRequest<CreateUserRequest> request)  {
+        if(AuthHeader == null || AuthHeader.isBlank()){
+            throw new ApplicationException(ApplicationCode.INVALID_TOKEN);
+        }
+        String accessToken = jwtUtil.extractToken(AuthHeader);
+        String role = jwtUtil.extractRole(accessToken);
+        if(!role.equals("admin")){
+            throw new ApplicationException(ApplicationCode.INVALID_ROLE);
+        }
         CreateUserRequest createUserRequest = request.getWsRequest();
         Optional<User> userOptional = userRepository.findByUsername(createUserRequest.getUsername());
         if (userOptional.isPresent()) {
@@ -42,7 +52,11 @@ public class UserServiceImpl implements UserService {
             if (Const.STATUS.DEACTIVATE.equals(userExists.getStatus())) {
                 throw new ApplicationException(ApplicationCode.USER_DEACTIVATE);
             }
-            throw new ApplicationException(ApplicationCode.USER_EXITS);
+            throw new ApplicationException(ApplicationCode.USER_EXIST);
+        }
+        String CurrentRole = createUserRequest.getRole();
+        if(!CurrentRole.equals("student") && !CurrentRole.equals("teacher") && !CurrentRole.equals("admin") ){
+            throw new ApplicationException(ApplicationCode.INVALID_ROLE);
         }
         User user = new User();
         BeanUtils.copyProperties(createUserRequest, user);
@@ -57,7 +71,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public BaseResponse<CreateUserResponse> getAllUser() {
+    public BaseResponse<CreateUserResponse> getAllUser(@RequestHeader("Authorization") String AuthHeader) {
+        if(AuthHeader == null || AuthHeader.isBlank()){
+            throw new ApplicationException(ApplicationCode.INVALID_TOKEN);
+        }
+        String accessToken = jwtUtil.extractToken(AuthHeader);
+        String role = jwtUtil.extractRole(accessToken);
+        if(!role.equals("admin")){
+            throw new ApplicationException(ApplicationCode.INVALID_ROLE);
+        }
         List<User> userList = userRepository.findAll();
         List<CreateUserResponse> createUserResponseList = new ArrayList<>();
         userList.forEach(

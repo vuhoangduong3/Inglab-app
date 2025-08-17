@@ -13,11 +13,12 @@ public class ApplicationCode {
     public static final int SUCCESS = 0;
     public static final int UNKNOWN_ERROR = 1;
     public static final int USER_DEACTIVATE = 2;
-    public static final int USER_EXITS = 3;
+    public static final int USER_EXIST = 3;
     public static final int INPUT_INVALID = 4;
     public static final int INVALID_PASSWORD = 5;
     public static final int INVALID_TOKEN = 6;
     public static final int USER_NOT_FOUND = 7;
+    public static final int INVALID_ROLE = 8;
 
     private static final Map<Integer, String> msg = new HashMap<>();
 
@@ -25,11 +26,12 @@ public class ApplicationCode {
         msg.put(SUCCESS, "SUCCESS");
         msg.put(UNKNOWN_ERROR, "UNKNOWN_ERROR");
         msg.put(USER_DEACTIVATE, "USER_DEACTIVATE");
-        msg.put(USER_EXITS, "USER_EXITS");
+        msg.put(USER_EXIST, "USER_EXIST");
         msg.put(INPUT_INVALID, "INPUT_INVALID");
         msg.put(INVALID_PASSWORD, "INVALID_PASSWORD");
         msg.put(INVALID_TOKEN, "INVALID_TOKEN");
         msg.put(USER_NOT_FOUND, "USER_NOT_FOUND");
+        msg.put(INVALID_ROLE, "INVALID_ROLE");
     }
 
     public static String getMessage(int code, String language) {
