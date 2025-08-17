@@ -14,6 +14,7 @@ import unicorns.backend.dto.request.LoginRequest;
 import unicorns.backend.dto.request.LogoutRequest;
 import unicorns.backend.dto.request.RefreshTokenRequest;
 import unicorns.backend.dto.response.BaseResponse;
+import unicorns.backend.dto.response.GetCurrentUserResponse;
 import unicorns.backend.dto.response.LoginResponse;
 import unicorns.backend.service.AuthService;
 import unicorns.backend.util.ApplicationCode;
@@ -71,5 +72,17 @@ public class AuthController {
         logoutRequest.getWsRequest().setAuthHeader(authHeader);
         authService.logout(logoutRequest);
         return ResponseEntity.ok(new BaseResponse<>(ApplicationCode.SUCCESS));
+    }
+
+    @Operation(summary = "Get current user", description = "Retrieves the currently authenticated user's information.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User retrieved successfully"),
+            @ApiResponse(responseCode = "401", description = "Invalid or expired access token",
+                    content = @Content(schema = @Schema(implementation = BaseResponse.class)))
+    })
+    @GetMapping("/me")
+    public ResponseEntity<BaseResponse<GetCurrentUserResponse>> getCurrentUser(@RequestHeader("Authorization") String AuthHeader) throws ApplicationException{
+            BaseResponse<GetCurrentUserResponse> response = authService.getCurrentUser(AuthHeader);
+            return ResponseEntity.ok(response);
     }
 }

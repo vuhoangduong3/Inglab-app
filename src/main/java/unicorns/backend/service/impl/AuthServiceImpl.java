@@ -4,11 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import unicorns.backend.dto.request.BaseRequest;
-import unicorns.backend.dto.request.LoginRequest;
-import unicorns.backend.dto.request.LogoutRequest;
-import unicorns.backend.dto.request.RefreshTokenRequest;
+import org.springframework.web.bind.annotation.RequestHeader;
+import unicorns.backend.dto.request.*;
 import unicorns.backend.dto.response.BaseResponse;
+import unicorns.backend.dto.response.GetCurrentUserResponse;
 import unicorns.backend.dto.response.LoginResponse;
 import unicorns.backend.entity.TokenBlacklist;
 import unicorns.backend.entity.User;
@@ -20,6 +19,7 @@ import unicorns.backend.util.ApplicationException;
 import unicorns.backend.util.JwtUtil;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Data
@@ -110,5 +110,22 @@ public class AuthServiceImpl implements AuthService {
         response.setWsResponse(null);
         return response;
     }
+
+    @Override
+    public BaseResponse<GetCurrentUserResponse> getCurrentUser(@RequestHeader("Authorization") String AuthHeader) throws ApplicationException {
+        if(AuthHeader == null || AuthHeader.isBlank()){
+            throw new ApplicationException(ApplicationCode.INVALID_TOKEN);
+        }
+        String accessToken = jwtUtil.extractToken(AuthHeader);
+        String username = jwtUtil.getUsernameFromToken(accessToken);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ApplicationException(ApplicationCode.USER_NOT_FOUND));
+       GetCurrentUserResponse getCurrentUserResponse = new GetCurrentUserResponse(user.getUsername(),user.getRole());
+       BaseResponse<GetCurrentUserResponse> response = new BaseResponse<>(ApplicationCode.SUCCESS);
+       response.setWsResponse(getCurrentUserResponse);
+       return response;
+    }
 }
+
+
 
