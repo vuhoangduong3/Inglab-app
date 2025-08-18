@@ -72,8 +72,9 @@ public class AuthServiceImpl implements AuthService {
         String role = jwtUtil.extractRole(refreshToken);
 
         String newAccessToken = jwtUtil.generateAccessToken(username, role);
+        String newRefreshToken = jwtUtil.generateRefreshToken(username,role);
 
-        LoginResponse loginResponse = new LoginResponse(newAccessToken, refreshToken, role);
+        LoginResponse loginResponse = new LoginResponse(newAccessToken, newRefreshToken, role);
         BaseResponse<LoginResponse> response = new BaseResponse<>(ApplicationCode.SUCCESS);
         response.setWsResponse(loginResponse);
 
