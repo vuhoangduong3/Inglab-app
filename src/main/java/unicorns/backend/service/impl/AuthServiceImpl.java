@@ -58,7 +58,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public BaseResponse<LoginResponse> refreshToken(BaseRequest<RefreshTokenRequest> RefreshTokenRequest) throws ApplicationException {
+    public BaseResponse<LoginResponse> refreshToken(BaseRequest<RefreshTokenRequest> RefreshTokenRequest)  {
         String refreshToken = RefreshTokenRequest.getWsRequest().getRefreshToken();
             if (refreshToken == null || refreshToken.isBlank()) {
                 throw new ApplicationException(ApplicationCode.INPUT_INVALID);
