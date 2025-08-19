@@ -60,6 +60,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public BaseResponse<LoginResponse> refreshToken(BaseRequest<RefreshTokenRequest> RefreshTokenRequest)  {
         String refreshToken = RefreshTokenRequest.getWsRequest().getRefreshToken();
+
             if (refreshToken == null || refreshToken.isBlank()) {
                 throw new ApplicationException(ApplicationCode.INPUT_INVALID);
             }
@@ -68,11 +69,20 @@ public class AuthServiceImpl implements AuthService {
                 throw new ApplicationException(ApplicationCode.INVALID_TOKEN);
             }
 
+            if(tokenBlacklistRepository.existsByToken(refreshToken)){
+                throw new ApplicationException(ApplicationCode.INVALID_TOKEN);
+            }
+
         String username = jwtUtil.getUsernameFromToken(refreshToken);
         String role = jwtUtil.extractRole(refreshToken);
 
         String newAccessToken = jwtUtil.generateAccessToken(username, role);
         String newRefreshToken = jwtUtil.generateRefreshToken(username,role);
+        TokenBlacklist blackListedToken = new TokenBlacklist();
+
+        blackListedToken.setToken(refreshToken);
+        blackListedToken.setExpiryDate(jwtUtil.getExpiryDate(refreshToken));
+        tokenBlacklistRepository.save(blackListedToken);
 
         LoginResponse loginResponse = new LoginResponse(newAccessToken, newRefreshToken, role);
         BaseResponse<LoginResponse> response = new BaseResponse<>(ApplicationCode.SUCCESS);
