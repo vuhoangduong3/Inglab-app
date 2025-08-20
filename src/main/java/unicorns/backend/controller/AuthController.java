@@ -67,10 +67,10 @@ public class AuthController {
                     content = @Content(schema = @Schema(implementation = BaseResponse.class)))
     })
     @PostMapping("/logout")
-    public ResponseEntity<BaseResponse<Void>> logout(@RequestBody BaseRequest<LogoutRequest> logoutRequest, HttpServletRequest request) throws ApplicationException {
-        String authHeader = request.getHeader("Authorization");
-        logoutRequest.getWsRequest().setAuthHeader(authHeader);
-        authService.logout(logoutRequest);
+    public ResponseEntity<BaseResponse<Void>> logout(@RequestHeader("Authorization") String AuthHeader,
+                                                     @RequestBody BaseRequest<LogoutRequest> logoutRequest) throws ApplicationException {
+
+        authService.logout(AuthHeader,logoutRequest);
         return ResponseEntity.ok(new BaseResponse<>(ApplicationCode.SUCCESS));
     }
 

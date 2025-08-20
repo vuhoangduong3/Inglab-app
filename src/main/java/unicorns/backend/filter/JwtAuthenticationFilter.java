@@ -17,6 +17,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import unicorns.backend.dto.response.BaseResponse;
+import unicorns.backend.repository.TokenBlacklistRepository;
 import unicorns.backend.util.ApplicationCode;
 import unicorns.backend.util.JwtUtil;
 
@@ -28,9 +29,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final TokenBlacklistRepository tokenBlacklistRepository;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, TokenBlacklistRepository tokenBlacklistRepository) {
         this.jwtUtil = jwtUtil;
+        this.tokenBlacklistRepository = tokenBlacklistRepository;
     }
 
     private void handleError(HttpServletResponse response) throws IOException {
@@ -57,6 +60,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             token = authHeader.substring(7);
             try {
                 if (token == null || token.trim().isEmpty()) {
+                    handleError(response);
+                    return;
+                }
+                if (tokenBlacklistRepository.existsByToken(token)){
+                    handleError(response);
+                    return;
+                }
+                if (!jwtUtil.validateToken(token)){
                     handleError(response);
                     return;
                 }

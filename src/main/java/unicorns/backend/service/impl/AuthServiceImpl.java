@@ -18,9 +18,6 @@ import unicorns.backend.util.ApplicationCode;
 import unicorns.backend.util.ApplicationException;
 import unicorns.backend.util.JwtUtil;
 
-import java.util.Objects;
-import java.util.Optional;
-
 @Service
 @Data
 @AllArgsConstructor
@@ -93,29 +90,28 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public BaseResponse<?> logout(BaseRequest<LogoutRequest> logoutRequest) throws ApplicationException {
-
+    public BaseResponse<?> logout(@RequestHeader("Authorization") String AuthHeader,
+                                  BaseRequest<LogoutRequest> logoutRequest) throws ApplicationException {
+        if(AuthHeader == null || AuthHeader.isBlank()){
+            throw new ApplicationException(ApplicationCode.INVALID_TOKEN);
+        }
         LogoutRequest request = logoutRequest.getWsRequest();
-        String username = request.getUsername();
-        String authHeader = request.getAuthHeader();
+        String refreshToken = request.getRefreshToken();
+        String accessToken = jwtUtil.extractToken(AuthHeader);
 
-        if (username == null || username.isEmpty()||authHeader == null || authHeader.isEmpty()) {
+        if (refreshToken == null || refreshToken.isEmpty()) {
             throw new ApplicationException(ApplicationCode.INVALID_TOKEN);
         }
 
-        String token = jwtUtil.extractToken(authHeader);
-        if (token == null || token.isEmpty()) {
-            throw new ApplicationException(ApplicationCode.INVALID_TOKEN);
-        }
+        TokenBlacklist blacklistedAccessToken = new TokenBlacklist();
+        blacklistedAccessToken.setToken(accessToken);
+        blacklistedAccessToken.setExpiryDate(jwtUtil.getExpiryDate(accessToken));
+        tokenBlacklistRepository.save(blacklistedAccessToken);
 
-        if(!Objects.equals(username, jwtUtil.getUsernameFromToken(token))){
-            throw new ApplicationException(ApplicationCode.INVALID_TOKEN);
-        }
-
-        TokenBlacklist blacklistedToken = new TokenBlacklist();
-        blacklistedToken.setToken(token);
-        blacklistedToken.setExpiryDate(jwtUtil.getExpiryDate(token));
-        tokenBlacklistRepository.save(blacklistedToken);
+        TokenBlacklist BlacklistedRefreshToken = new TokenBlacklist();
+        BlacklistedRefreshToken.setToken(refreshToken);
+        BlacklistedRefreshToken.setExpiryDate(jwtUtil.getExpiryDate(refreshToken));
+        tokenBlacklistRepository.save(BlacklistedRefreshToken);
 
         BaseResponse<?> response = new BaseResponse<>(ApplicationCode.SUCCESS);
         response.setWsResponse(null);
