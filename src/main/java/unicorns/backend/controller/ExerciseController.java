@@ -7,6 +7,8 @@ import unicorns.backend.service.ExerciseService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.Operation;
+
 import java.util.List;
 
 @RestController
@@ -19,11 +21,13 @@ public class ExerciseController {
         this.service = service;
     }
 
+    @Operation(summary = "Create a new exercise")
     @PostMapping
     public ExerciseMetaResponse create(@Valid @RequestBody ExerciseCreateRequest req) {
         return service.create(req);
     }
 
+    @Operation(summary = "Get list of all exercises")
     @GetMapping
     public List<ExerciseMetaResponse> list() {
         return service.listAllMetas();
