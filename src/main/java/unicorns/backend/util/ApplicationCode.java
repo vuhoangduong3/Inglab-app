@@ -19,6 +19,7 @@ public class ApplicationCode {
     public static final int INVALID_TOKEN = 6;
     public static final int USER_NOT_FOUND = 7;
     public static final int INVALID_ROLE = 8;
+    public static final int CLASS_NOT_FOUND = 9;
 
     private static final Map<Integer, String> msg = new HashMap<>();
 
@@ -32,6 +33,7 @@ public class ApplicationCode {
         msg.put(INVALID_TOKEN, "INVALID_TOKEN");
         msg.put(USER_NOT_FOUND, "USER_NOT_FOUND");
         msg.put(INVALID_ROLE, "INVALID_ROLE");
+        msg.put(CLASS_NOT_FOUND,"CLASS_NOT_FOUND");
     }
 
     public static String getMessage(int code, String language) {
