@@ -20,16 +20,13 @@ public class StudentAnswerResponse {
     String studentName;
 
     @Schema(description = "ID of the quiz", example = "10")
-    Long quizId;
+    Long exerciseId;
 
     @Schema(description = "ID of the question", example = "5")
-    Long questionId;
+    Long quizQuestionId;
 
-    @Schema(description = "The text of the question", example = "What is 2+2?")
-    String questionText;
-
-    @Schema(description = "The student's answer", example = "A")
-    String studentAnswer;
+    @Schema(description = "Id of the student's answer", example = "2")
+    Long quizOptionId;
 
     @Schema(description = "Whether the student's answer is correct", example = "true")
     Boolean isCorrect;

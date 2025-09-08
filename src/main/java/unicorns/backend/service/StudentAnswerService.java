@@ -1,11 +1,13 @@
 package unicorns.backend.service;
 
 import unicorns.backend.dto.request.StudentAnswerRequest;
+import unicorns.backend.dto.response.ExerciseAnswerResponse;
 import unicorns.backend.dto.response.StudentAnswerResponse;
 
 import java.util.List;
 
 public interface StudentAnswerService {
-    List<StudentAnswerResponse> submitQuiz(Long studentId, Long quizId, List<StudentAnswerRequest> requests);
-    List<StudentAnswerResponse> getAnswer(Long studentId, Long quizId);
+    ExerciseAnswerResponse submitQuiz(Long studentId, Long exerciseId, List<StudentAnswerRequest> requests);
+    ExerciseAnswerResponse getAnswer(Long studentId, Long exerciseId);
 }
+

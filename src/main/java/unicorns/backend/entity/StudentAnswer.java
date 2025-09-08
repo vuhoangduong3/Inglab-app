@@ -17,11 +17,14 @@ public class StudentAnswer extends BaseEntity {
     private User student;
 
     @ManyToOne
-    private Quiz quiz;      // tam thoi
+    private Exercise exercise;
 
     @ManyToOne
-    private Question question;
+    private QuizQuestion question;
 
-    private String studentAnswer;
+    @ManyToOne
+    private QuizOption option;
+
     private Boolean isCorrect;
 }
+
