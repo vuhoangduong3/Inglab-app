@@ -1,5 +1,6 @@
 package unicorns.backend.service.impl;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import unicorns.backend.dto.request.StudentAnswerRequest;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class StudentAnswerServiceImpl implements StudentAnswerService {
 
     private final StudentAnswerRepository studentAnswerRepository;
@@ -27,6 +29,9 @@ public class StudentAnswerServiceImpl implements StudentAnswerService {
 
         User student = userRepository.findById(studentId).orElseThrow(() -> new RuntimeException("Student not found"));
         Exercise exercise = exerciseRepository.findById(exerciseId).orElseThrow(() -> new RuntimeException("Exercise not found"));
+
+        // Xoá hết answer cũ trước khi lưu mới
+        studentAnswerRepository.deleteByStudent_IdAndExercise_Id(studentId, exerciseId);
 
         List<StudentAnswer> answers = requests.stream().map(req -> {
             QuizQuestion question = quizQuestionRepository.findById(req.getQuizQuestionId()).orElse(null);

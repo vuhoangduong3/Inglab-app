@@ -7,5 +7,5 @@ import java.util.List;
 public interface StudentAnswerRepository extends JpaRepository<StudentAnswer, Long> {
 
     List<StudentAnswer> findByStudent_IdAndExercise_Id(Long studentId, Long exerciseId);
-
+    void deleteByStudent_IdAndExercise_Id(Long studentId, Long exerciseId);
 }
