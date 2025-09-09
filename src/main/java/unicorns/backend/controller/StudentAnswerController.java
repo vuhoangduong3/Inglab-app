@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import unicorns.backend.dto.request.BaseRequest;
 import unicorns.backend.dto.request.StudentAnswerRequest;
 import unicorns.backend.dto.response.BaseResponse;
+import unicorns.backend.dto.response.ExerciseAnswerResponse;
 import unicorns.backend.dto.response.StudentAnswerResponse;
 import unicorns.backend.service.StudentAnswerService;
 import unicorns.backend.util.ApplicationCode;
@@ -21,12 +22,12 @@ import unicorns.backend.util.Const;
 import java.util.List;
 
 @RestController
-@RequestMapping(Const.PREFIX_STUDENTANSWER_V1) // ví dụ: "/api/v1/student-answer/"
+@RequestMapping(Const.PREFIX_STUDENTANSWER_V1)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class StudentAnswerController {
 
-    StudentAnswerService studentAnswerService;
+    final StudentAnswerService studentAnswerService;
 
     @Operation(summary = "Submit quiz answers", description = "Submit multiple answers for a quiz by a student.")
     @ApiResponses(value = {
@@ -34,17 +35,18 @@ public class StudentAnswerController {
             @ApiResponse(responseCode = "400", description = "Invalid input",
                     content = @Content(schema = @Schema(implementation = BaseResponse.class)))
     })
-    @PostMapping("submit/{quizId}/student/{studentId}")
-    public BaseResponse<List<StudentAnswerResponse>> submitQuiz(
-            @PathVariable Long quizId,
+    @PostMapping("submit/{exerciseId}/student/{studentId}")
+    public BaseResponse<ExerciseAnswerResponse> submitQuiz(
+            @PathVariable Long exerciseId,
             @PathVariable Long studentId,
-            @Valid @RequestBody BaseRequest<List<StudentAnswerRequest>> request
+            @Valid @RequestBody List<StudentAnswerRequest> request
     ) {
-        List<StudentAnswerResponse> responses =
-                studentAnswerService.submitQuiz(studentId, quizId, request.getWsRequest());
-        BaseResponse<List<StudentAnswerResponse>> baseResponse =
+        ExerciseAnswerResponse response =
+                studentAnswerService.submitQuiz(studentId, exerciseId, request);
+
+        BaseResponse<ExerciseAnswerResponse> baseResponse =
                 new BaseResponse<>(ApplicationCode.SUCCESS);
-        baseResponse.setWsResponse(responses);
+        baseResponse.setWsResponse(response);
         return baseResponse;
     }
 
@@ -52,16 +54,17 @@ public class StudentAnswerController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Answers retrieved successfully")
     })
-    @GetMapping("getAnswers/{quizId}/student/{studentId}")
-    public BaseResponse<List<StudentAnswerResponse>> getAnswers(
-            @PathVariable Long quizId,
+    @GetMapping("getAnswers/{exerciseId}/student/{studentId}")
+    public BaseResponse<ExerciseAnswerResponse> getAnswers(
+            @PathVariable Long exerciseId,
             @PathVariable Long studentId
     ) {
-        List<StudentAnswerResponse> responses =
-                studentAnswerService.getAnswer(studentId, quizId);
-        BaseResponse<List<StudentAnswerResponse>> baseResponse =
+        ExerciseAnswerResponse response =
+                studentAnswerService.getAnswer(studentId, exerciseId);
+
+        BaseResponse<ExerciseAnswerResponse> baseResponse =
                 new BaseResponse<>(ApplicationCode.SUCCESS);
-        baseResponse.setWsResponse(responses);
+        baseResponse.setWsResponse(response);
         return baseResponse;
     }
 }
