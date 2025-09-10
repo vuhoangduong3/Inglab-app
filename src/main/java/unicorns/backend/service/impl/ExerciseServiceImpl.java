@@ -3,9 +3,12 @@ package unicorns.backend.service.impl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import unicorns.backend.dto.request.ExerciseCreateRequest;
+import unicorns.backend.dto.response.ExerciseDetailResponse;
 import unicorns.backend.dto.response.ExerciseMetaResponse;
 import unicorns.backend.dto.request.OptionCreateRequest;
 import unicorns.backend.dto.request.QuestionCreateRequest;
+import unicorns.backend.dto.response.OptionResponse;
+import unicorns.backend.dto.response.QuestionResponse;
 import unicorns.backend.entity.Exercise;
 import unicorns.backend.entity.QuizOption;
 import unicorns.backend.entity.QuizQuestion;
@@ -93,5 +96,26 @@ public class ExerciseServiceImpl implements ExerciseService {
             result.add(new ExerciseMetaResponse(e.getId(), e.getTitle(), e.getDescription(), total));
         }
         return result;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ExerciseDetailResponse getDetail(Long id) {
+        Exercise e = exerciseRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Exercise not found: " + id));
+
+        List<QuestionResponse> qrs = new ArrayList<>();
+        if (e.getQuestions() != null) {
+            for (QuizQuestion q : e.getQuestions()) {
+                List<OptionResponse> ors = new ArrayList<>();
+                if (q.getOptions() != null) {
+                    for (QuizOption o : q.getOptions()) {
+                        ors.add(new OptionResponse(o.getId(), o.getText(), o.isCorrect()));
+                    }
+                }
+                qrs.add(new QuestionResponse(q.getId(), q.getText(), ors));
+            }
+        }
+        return new ExerciseDetailResponse(e.getId(), e.getTitle(), e.getDescription(), qrs);
     }
 }
