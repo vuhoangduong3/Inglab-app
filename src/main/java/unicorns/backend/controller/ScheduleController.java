@@ -39,14 +39,19 @@ public class ScheduleController {
     }
 
     @Operation(summary = "get student Schedule by date")
-    @GetMapping("student/{id}/byDate")
-    public BaseResponse<List<ScheduleInfoResponse>> getStudentScheduleByDate(@PathVariable("id") long studentId,@RequestBody ScheduleByDateRequest request) {
-        return scheduleService.getStudentScheduleByDate(studentId,request);
+    @GetMapping("/student/{id}/byDate")
+    public BaseResponse<List<ScheduleInfoResponse>> getStudentScheduleByDate(@PathVariable("id") long studentId, @RequestBody ScheduleByDateRequest request) {
+        return scheduleService.getStudentScheduleByDate(studentId, request);
     }
 
     @Operation(summary = "get teacher Schedule by date")
-    @GetMapping("teacher/{id}/byDate")
-    public BaseResponse<List<ScheduleInfoResponse>> getTeacherScheduleByDate(@PathVariable("id") long teacherId,@RequestBody ScheduleByDateRequest request) {
-        return scheduleService.getStudentScheduleByDate(teacherId,request);
+    @GetMapping("/teacher/{id}/byDate")
+    public BaseResponse<List<ScheduleInfoResponse>> getTeacherScheduleByDate(@PathVariable("id") long teacherId, @RequestBody ScheduleByDateRequest request) {
+        return scheduleService.getTeacherScheduleByDate(teacherId, request);
+    }
+    @Operation(summary = "get current user Schedule")
+    @GetMapping("/currentUser")
+    public BaseResponse<List<ScheduleInfoResponse>> getCurrentUserSchedule(@RequestHeader("Authorization") String AuthHeader){
+        return scheduleService.getCurrentUserResponse(AuthHeader);
     }
 }
