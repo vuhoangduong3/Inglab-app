@@ -1,5 +1,6 @@
 package unicorns.backend.service.impl;
 
+import unicorns.backend.dto.response.GetProfileResponse;
 import unicorns.backend.util.JwtUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -122,6 +123,21 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
         BaseResponse<UpdateProfileResponse> response = new BaseResponse<>(ApplicationCode.SUCCESS);
         response.setWsResponse(UpdateProfileResponse.from(user));
+        return response;
+    }
+    public BaseResponse<GetProfileResponse> getProfile(@RequestHeader("Authorization") String AuthHeader){
+        if(AuthHeader == null || AuthHeader.isBlank()){
+            throw new ApplicationException(ApplicationCode.INVALID_TOKEN);
+        }
+
+        String token = jwtUtil.extractToken(AuthHeader);
+        Long id = jwtUtil.getIdFromToken(token);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ApplicationException(ApplicationCode.USER_NOT_FOUND));
+        GetProfileResponse getProfileResponse = new GetProfileResponse();
+        BeanUtils.copyProperties(user,getProfileResponse);
+        BaseResponse<GetProfileResponse> response = new BaseResponse<>(ApplicationCode.SUCCESS);
+        response.setWsResponse(getProfileResponse);
         return response;
     }
 }

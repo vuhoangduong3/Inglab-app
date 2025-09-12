@@ -7,6 +7,7 @@ import unicorns.backend.dto.request.CreateUserRequest;
 import unicorns.backend.dto.request.UpdateProfileRequest;
 import unicorns.backend.dto.response.BaseResponse;
 import unicorns.backend.dto.response.CreateUserResponse;
+import unicorns.backend.dto.response.GetProfileResponse;
 import unicorns.backend.dto.response.UpdateProfileResponse;
 
 public interface UserService {
@@ -14,4 +15,5 @@ public interface UserService {
                                                 BaseRequest<CreateUserRequest> request);
     BaseResponse<CreateUserResponse> getAllUser(@RequestHeader("Authorization") String AuthHeader);
     BaseResponse<UpdateProfileResponse> updateProfile(BaseRequest<UpdateProfileRequest> request);
+    BaseResponse<GetProfileResponse> getProfile(@RequestHeader("Authorization") String AuthHeader);
 }

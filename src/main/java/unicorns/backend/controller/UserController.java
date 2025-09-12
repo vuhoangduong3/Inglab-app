@@ -15,6 +15,7 @@ import unicorns.backend.dto.request.CreateUserRequest;
 import unicorns.backend.dto.request.UpdateProfileRequest;
 import unicorns.backend.dto.response.BaseResponse;
 import unicorns.backend.dto.response.CreateUserResponse;
+import unicorns.backend.dto.response.GetProfileResponse;
 import unicorns.backend.dto.response.UpdateProfileResponse;
 import unicorns.backend.service.UserService;
 import unicorns.backend.util.Const;
@@ -59,6 +60,11 @@ public class UserController {
         return userService.updateProfile(request);
     }
 
+    @Operation(summary = "get profile")
+    @GetMapping("me/getProfile")
+    public BaseResponse<GetProfileResponse> getProfile(@RequestHeader("Authorization") String AuthHader){
+        return userService.getProfile(AuthHader);
+    }
 
 }
 
