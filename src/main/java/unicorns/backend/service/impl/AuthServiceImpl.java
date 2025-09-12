@@ -44,10 +44,9 @@ public class AuthServiceImpl implements AuthService {
             throw new ApplicationException(ApplicationCode.INVALID_PASSWORD);
         }
 
-        String accessToken = jwtUtil.generateAccessToken(username, user.getRole());
-        String refreshToken = jwtUtil.generateRefreshToken(username, user.getRole());
-
-        LoginResponse loginResponse = new LoginResponse(accessToken, refreshToken, user.getRole());
+        String accessToken = jwtUtil.generateAccessToken(username, user.getRole(), user.getId());
+        String refreshToken = jwtUtil.generateRefreshToken(username, user.getRole(),user.getId());
+        LoginResponse loginResponse = new LoginResponse(accessToken, refreshToken, user.getRole(),user.getId());
         BaseResponse<LoginResponse> response = new BaseResponse<>(ApplicationCode.SUCCESS);
         response.setWsResponse(loginResponse);
 
@@ -72,16 +71,17 @@ public class AuthServiceImpl implements AuthService {
 
         String username = jwtUtil.getUsernameFromToken(refreshToken);
         String role = jwtUtil.extractRole(refreshToken);
+        Long id = jwtUtil.getIdFromToken(refreshToken);
 
-        String newAccessToken = jwtUtil.generateAccessToken(username, role);
-        String newRefreshToken = jwtUtil.generateRefreshToken(username,role);
+        String newAccessToken = jwtUtil.generateAccessToken(username,role,id);
+        String newRefreshToken = jwtUtil.generateRefreshToken(username,role,id);
         TokenBlacklist blackListedToken = new TokenBlacklist();
 
         blackListedToken.setToken(refreshToken);
         blackListedToken.setExpiryDate(jwtUtil.getExpiryDate(refreshToken));
         tokenBlacklistRepository.save(blackListedToken);
 
-        LoginResponse loginResponse = new LoginResponse(newAccessToken, newRefreshToken, role);
+        LoginResponse loginResponse = new LoginResponse(newAccessToken, newRefreshToken, role, id);
         BaseResponse<LoginResponse> response = new BaseResponse<>(ApplicationCode.SUCCESS);
         response.setWsResponse(loginResponse);
 

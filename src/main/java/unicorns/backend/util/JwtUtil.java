@@ -20,10 +20,11 @@ public class JwtUtil {
     @Value("${jwt.refreshExpiration}")
     private long refreshExpiration;
 
-    public String generateAccessToken(String username, String role) {
+    public String generateAccessToken(String username, String role, Long userId) {
         return Jwts.builder()
                 .setSubject(username)
                 .claim("role", role)
+                .claim("id", userId)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + accessExpiration))
                 .signWith(SignatureAlgorithm.HS512, secret)
@@ -32,10 +33,11 @@ public class JwtUtil {
 
 
 
-    public String generateRefreshToken(String username, String role) {
+    public String generateRefreshToken(String username, String role, Long userId) {
         return Jwts.builder()
                 .setSubject(username)
                 .claim("role", role)
+                .claim("id",userId)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + refreshExpiration))
                 .signWith(SignatureAlgorithm.HS512, secret)
@@ -82,6 +84,13 @@ public class JwtUtil {
     }
     public long getExpiryDate(String token) {
         return getClaims(token).getExpiration().getTime();
+    }
+    public long getIdFromToken(String token){
+        return Jwts.parser()
+                .setSigningKey(secret)
+                .parseClaimsJws(token)
+                .getBody()
+                .get("id", Long.class);
     }
 }
 

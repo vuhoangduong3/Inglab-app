@@ -1,5 +1,6 @@
 package unicorns.backend.service;
 
+import org.springframework.web.bind.annotation.RequestHeader;
 import unicorns.backend.dto.request.CreateScheduleRequest;
 import unicorns.backend.dto.request.ScheduleByDateRequest;
 import unicorns.backend.dto.response.BaseResponse;
@@ -14,4 +15,5 @@ public interface ScheduleService {
     BaseResponse<List<ScheduleInfoResponse>> getTeacherSchedule(Long teacherId);
     BaseResponse<List<ScheduleInfoResponse>> getStudentScheduleByDate(Long studentId, ScheduleByDateRequest request);
     BaseResponse<List<ScheduleInfoResponse>> getTeacherScheduleByDate(Long teacherId, ScheduleByDateRequest request);
+    BaseResponse<List<ScheduleInfoResponse>> getCurrentUserResponse(@RequestHeader("Authorization") String AuthHeader);
 }
