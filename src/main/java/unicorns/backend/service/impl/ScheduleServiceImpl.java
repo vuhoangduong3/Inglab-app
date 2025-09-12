@@ -3,6 +3,7 @@ package unicorns.backend.service.impl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestHeader;
 import unicorns.backend.dto.request.CreateScheduleRequest;
 import unicorns.backend.dto.request.ScheduleByDateRequest;
 import unicorns.backend.dto.response.BaseResponse;
@@ -18,7 +19,9 @@ import unicorns.backend.repository.UserRepository;
 import unicorns.backend.service.ScheduleService;
 import unicorns.backend.util.ApplicationCode;
 import unicorns.backend.util.ApplicationException;
+import unicorns.backend.util.JwtUtil;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -29,6 +32,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final ClassRepository classRepository;
     private final UserRepository userRepository;
     private final ClassMemberRepository classMemberRepository;
+    private final JwtUtil jwtUtil;
 
     @Override
     @Transactional
@@ -154,11 +158,28 @@ public class ScheduleServiceImpl implements ScheduleService {
                     info.setRoom(s.getRoom());
                     return info;
                 })
-                .sorted((a,b) -> a.getStartTime().compareTo(b.getStartTime()))
+                .sorted(Comparator.comparing(ScheduleInfoResponse::getStartTime))
                 .toList();
 
         BaseResponse<List<ScheduleInfoResponse>> baseResponse = new BaseResponse<>(ApplicationCode.SUCCESS);
         baseResponse.setWsResponse(schedules);
         return baseResponse;
+    }
+    public BaseResponse<List<ScheduleInfoResponse>> getCurrentUserResponse(@RequestHeader("Authorization") String AuthHeader){
+        if(AuthHeader == null || AuthHeader.isBlank()){
+            throw new ApplicationException(ApplicationCode.INVALID_TOKEN);
+        }
+        String token = jwtUtil.extractToken(AuthHeader);
+        Long id = jwtUtil.getIdFromToken(token);
+        String role = jwtUtil.extractRole(token);
+        switch (role) {
+            case "teacher":
+                return this.getTeacherSchedule(id);
+            case "student":
+                return this.getStudentSchedule(id);
+            default:
+                throw new ApplicationException(ApplicationCode.INVALID_ROLE);
+        }
+
     }
 }
