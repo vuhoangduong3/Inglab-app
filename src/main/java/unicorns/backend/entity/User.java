@@ -27,6 +27,7 @@ public class User extends BaseEntity {
     Integer countFail;
     Integer status;
     String role;
+    String gender;
 
 
 }

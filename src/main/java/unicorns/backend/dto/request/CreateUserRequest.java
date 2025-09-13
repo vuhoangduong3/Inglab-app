@@ -34,4 +34,8 @@ public class CreateUserRequest {
     @Schema(description = "Role can not blank")
     @NotBlank(message = "Role can not blank")
     String role;
+
+    @Schema(description = "Gender can not blank")
+    @NotBlank(message = "Gender can not blank")
+    String gender;
 }
