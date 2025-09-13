@@ -132,6 +132,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                             info.setStartTime(s.getStartTime());
                             info.setEndTime(s.getEndTime());
                             info.setRoom(s.getRoom());
+                            info.setTeacherName(s.getTeacher().getUsername());
                             return info;
                         })
                 )
