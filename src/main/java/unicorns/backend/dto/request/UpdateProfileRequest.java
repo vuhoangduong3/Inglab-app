@@ -24,5 +24,7 @@ public class UpdateProfileRequest {
             message = "Password must be at least 8 characters long and include uppercase letters, lowercase letters, numbers, and special character"
     )
     String password;
+    String gender;
+    String phoneNumber;
 
 }

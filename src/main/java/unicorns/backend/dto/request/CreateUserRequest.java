@@ -38,4 +38,6 @@ public class CreateUserRequest {
     @Schema(description = "Gender can not blank")
     @NotBlank(message = "Gender can not blank")
     String gender;
+
+    String phoneNumber;
 }

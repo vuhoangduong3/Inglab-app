@@ -28,6 +28,7 @@ public class User extends BaseEntity {
     Integer status;
     String role;
     String gender;
+    String phoneNumber;
 
 
 }
