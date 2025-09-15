@@ -9,6 +9,7 @@ import unicorns.backend.dto.request.ScheduleByDateRequest;
 import unicorns.backend.dto.response.BaseResponse;
 import unicorns.backend.dto.response.CreateScheduleResponse;
 import unicorns.backend.dto.response.ScheduleInfoResponse;
+import unicorns.backend.dto.response.StudentInfoResponse;
 import unicorns.backend.entity.Classes;
 import unicorns.backend.entity.Schedule;
 import unicorns.backend.entity.User;
@@ -132,6 +133,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                             info.setStartTime(s.getStartTime());
                             info.setEndTime(s.getEndTime());
                             info.setRoom(s.getRoom());
+                            info.setTeacherName(s.getTeacher().getUsername());
                             return info;
                         })
                 )
@@ -180,6 +182,28 @@ public class ScheduleServiceImpl implements ScheduleService {
             default:
                 throw new ApplicationException(ApplicationCode.INVALID_ROLE);
         }
+    }
+    public BaseResponse<List<StudentInfoResponse>> getStudentInSchedule(@RequestHeader("Authorization") String AuthHeader,
+                                                                 long ScheduleId){
+        if(AuthHeader == null || AuthHeader.isBlank()){
+            throw new ApplicationException(ApplicationCode.INVALID_TOKEN);
+        }
 
+        Schedule schedule = scheduleRepository.findById(ScheduleId)
+                .orElseThrow(() -> new ApplicationException(ApplicationCode.SCHEDULE_NOT_FOUND) );
+        List<StudentInfoResponse> students = schedule.getClassEntity()
+                .getMembers()
+                .stream()
+                .map(cm -> {
+                    StudentInfoResponse response = new StudentInfoResponse();
+                    response.setId(cm.getStudent().getId());
+                    response.setName(cm.getStudent().getName());
+                    return response;
+                })
+                .toList();
+        BaseResponse<List<StudentInfoResponse>> response =
+                new BaseResponse<>(ApplicationCode.SUCCESS);
+        response.setWsResponse(students);
+        return response;
     }
 }

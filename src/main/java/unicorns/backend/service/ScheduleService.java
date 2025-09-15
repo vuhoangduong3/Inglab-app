@@ -6,6 +6,7 @@ import unicorns.backend.dto.request.ScheduleByDateRequest;
 import unicorns.backend.dto.response.BaseResponse;
 import unicorns.backend.dto.response.CreateScheduleResponse;
 import unicorns.backend.dto.response.ScheduleInfoResponse;
+import unicorns.backend.dto.response.StudentInfoResponse;
 
 import java.util.List;
 
@@ -16,4 +17,6 @@ public interface ScheduleService {
     BaseResponse<List<ScheduleInfoResponse>> getStudentScheduleByDate(Long studentId, ScheduleByDateRequest request);
     BaseResponse<List<ScheduleInfoResponse>> getTeacherScheduleByDate(Long teacherId, ScheduleByDateRequest request);
     BaseResponse<List<ScheduleInfoResponse>> getCurrentUserResponse(@RequestHeader("Authorization") String AuthHeader);
+    BaseResponse<List<StudentInfoResponse>> getStudentInSchedule(@RequestHeader("Authorization") String AuthHeader,
+                                                                 long ScheduleId);
 }

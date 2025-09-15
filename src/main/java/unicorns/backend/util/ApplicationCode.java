@@ -20,8 +20,10 @@ public class ApplicationCode {
     public static final int USER_NOT_FOUND = 7;
     public static final int INVALID_ROLE = 8;
     public static final int CLASS_NOT_FOUND = 9;
+    public static final int SCHEDULE_NOT_FOUND = 10;
 
     private static final Map<Integer, String> msg = new HashMap<>();
+
 
     static {
         msg.put(SUCCESS, "SUCCESS");
@@ -34,6 +36,7 @@ public class ApplicationCode {
         msg.put(USER_NOT_FOUND, "USER_NOT_FOUND");
         msg.put(INVALID_ROLE, "INVALID_ROLE");
         msg.put(CLASS_NOT_FOUND,"CLASS_NOT_FOUND");
+        msg.put(SCHEDULE_NOT_FOUND,"SCHEDULE_NOT_FOUND");
     }
 
     public static String getMessage(int code, String language) {

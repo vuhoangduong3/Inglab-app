@@ -8,6 +8,7 @@ import unicorns.backend.dto.request.ScheduleByDateRequest;
 import unicorns.backend.dto.response.BaseResponse;
 import unicorns.backend.dto.response.CreateScheduleResponse;
 import unicorns.backend.dto.response.ScheduleInfoResponse;
+import unicorns.backend.dto.response.StudentInfoResponse;
 import unicorns.backend.service.ScheduleService;
 import unicorns.backend.util.Const;
 
@@ -49,9 +50,16 @@ public class ScheduleController {
     public BaseResponse<List<ScheduleInfoResponse>> getTeacherScheduleByDate(@PathVariable("id") long teacherId, @RequestBody ScheduleByDateRequest request) {
         return scheduleService.getTeacherScheduleByDate(teacherId, request);
     }
+
     @Operation(summary = "get current user Schedule")
     @GetMapping("/currentUser")
     public BaseResponse<List<ScheduleInfoResponse>> getCurrentUserSchedule(@RequestHeader("Authorization") String AuthHeader){
         return scheduleService.getCurrentUserResponse(AuthHeader);
+    }
+
+    @Operation(summary = "get Students in schedule by id")
+    @GetMapping("/students/schedule/{id}")
+    public BaseResponse<List<StudentInfoResponse>> getStudentInSchedule(@RequestHeader("Authorization") String AuthHeader, @PathVariable("id") Long id){
+        return scheduleService.getStudentInSchedule(AuthHeader,id);
     }
 }
