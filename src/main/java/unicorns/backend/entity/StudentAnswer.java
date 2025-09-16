@@ -11,6 +11,7 @@ import unicorns.backend.util.Schema;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Table(schema = Schema.BACKEND_APP)
+
 public class StudentAnswer extends BaseEntity {
 
     @ManyToOne

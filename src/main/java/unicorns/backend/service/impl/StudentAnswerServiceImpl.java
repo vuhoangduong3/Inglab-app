@@ -4,8 +4,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import unicorns.backend.dto.request.StudentAnswerRequest;
+import unicorns.backend.dto.response.AllStudentScoreResponse;
 import unicorns.backend.dto.response.ExerciseAnswerResponse;
 import unicorns.backend.dto.response.StudentAnswerResponse;
+import unicorns.backend.dto.response.StudentScoreResponse;
 import unicorns.backend.entity.*;
 import unicorns.backend.repository.*;
 import unicorns.backend.service.StudentAnswerService;
@@ -23,6 +25,8 @@ public class StudentAnswerServiceImpl implements StudentAnswerService {
     private final ExerciseRepository exerciseRepository;
     private final QuizQuestionRepository quizQuestionRepository;
     private final QuizOptionRepository quizOptionRepository;
+    private final StudentScoreRepository studentScoreRepository;
+    private final ClassMemberRepository classMemberRepository;
 
     @Override
     public ExerciseAnswerResponse submitQuiz(Long studentId, Long exerciseId, List<StudentAnswerRequest> requests) {
@@ -49,6 +53,21 @@ public class StudentAnswerServiceImpl implements StudentAnswerService {
             return studentAnswerRepository.save(studentAnswer);
         }).collect(Collectors.toList());
 
+        int correctCount = (int) answers.stream().filter(StudentAnswer::getIsCorrect).count();
+
+        StudentScore score = studentScoreRepository.findByStudent_IdAndExercise_Id(studentId, exerciseId);
+        if (score == null) {
+            score = new StudentScore();
+            score.setStudent(student);
+            score.setExercise(exercise);
+        }
+
+        if (score.getCorrectAnswer() == null || correctCount > score.getCorrectAnswer()) {
+            score.setCorrectAnswer(correctCount);
+            score.setTotalQuestion(answers.size());
+            studentScoreRepository.save(score);
+        }
+
         return mapToExerciseResponse(student, exercise, answers);
     }
 
@@ -58,6 +77,30 @@ public class StudentAnswerServiceImpl implements StudentAnswerService {
         User student = userRepository.findById(studentId).orElse(null);
         Exercise exercise = exerciseRepository.findById(exerciseId).orElse(null);
         return mapToExerciseResponse(student, exercise, answers);
+    }
+
+    @Override
+    public AllStudentScoreResponse getAllStudentScore(Long classId, Long exerciseId) {
+        List<ClassMember> members = classMemberRepository.findByClassEntity_Id(classId);
+
+        List<StudentScoreResponse> scoreResponses = members.stream().map(member -> {
+            User student = member.getStudent();
+            StudentScore score = studentScoreRepository.findByStudent_IdAndExercise_Id(student.getId(), exerciseId);
+
+            StudentScoreResponse res = new StudentScoreResponse();
+            res.setId(score != null ? score.getId() : 0);
+            res.setStudentId(student.getId());
+            res.setStudentName(student.getName());
+            res.setCorrectAnswer(score != null ? score.getCorrectAnswer() : 0);
+            return res;
+        }).collect(Collectors.toList());
+
+        AllStudentScoreResponse response = new AllStudentScoreResponse();
+        response.setClassId(classId);
+        response.setExerciseId(exerciseId);
+        response.setAnswers(scoreResponses);
+
+        return response;
     }
 
     private StudentAnswerResponse mapToResponse(StudentAnswer answer) {

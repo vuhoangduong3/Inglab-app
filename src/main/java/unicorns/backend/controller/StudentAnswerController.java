@@ -12,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 import unicorns.backend.dto.request.BaseRequest;
 import unicorns.backend.dto.request.StudentAnswerRequest;
+import unicorns.backend.dto.response.AllStudentScoreResponse;
 import unicorns.backend.dto.response.BaseResponse;
 import unicorns.backend.dto.response.ExerciseAnswerResponse;
 import unicorns.backend.dto.response.StudentAnswerResponse;
@@ -27,9 +28,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StudentAnswerController {
 
-    final StudentAnswerService studentAnswerService;
+    private final StudentAnswerService studentAnswerService;
 
-    @Operation(summary = "Submit exercise answers", description = "Submit multiple answers for a exercise by a student.")
+    @Operation(summary = "Submit exercise", description = "Submit multiple answers for a exercise by a student.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Answers submitted successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid input",
@@ -50,7 +51,7 @@ public class StudentAnswerController {
         return baseResponse;
     }
 
-    @Operation(summary = "Get student answers", description = "Retrieve submitted answers of a student for a quiz.")
+    @Operation(summary = "Get student answers")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Answers retrieved successfully")
     })
@@ -63,6 +64,24 @@ public class StudentAnswerController {
                 studentAnswerService.getAnswer(studentId, exerciseId);
 
         BaseResponse<ExerciseAnswerResponse> baseResponse =
+                new BaseResponse<>(ApplicationCode.SUCCESS);
+        baseResponse.setWsResponse(response);
+        return baseResponse;
+    }
+
+    @Operation (summary = "Get all point of class")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Answers retrieved successfully")
+    })
+    @GetMapping("getAnswers/{exerciseId}/class/{classId}")
+    public BaseResponse<AllStudentScoreResponse> getAllAnswers (
+        @PathVariable Long classId,
+        @PathVariable Long exerciseId
+    ) {
+        AllStudentScoreResponse response =
+                studentAnswerService.getAllStudentScore(classId, exerciseId);
+
+        BaseResponse<AllStudentScoreResponse> baseResponse =
                 new BaseResponse<>(ApplicationCode.SUCCESS);
         baseResponse.setWsResponse(response);
         return baseResponse;
