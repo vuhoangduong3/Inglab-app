@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestHeader;
 import unicorns.backend.dto.request.AddStudentToClassRequest;
 import unicorns.backend.dto.request.CreateClassRequest;
 import unicorns.backend.dto.request.RemoveStudentsFromClassRequest;
@@ -17,6 +18,8 @@ import unicorns.backend.repository.UserRepository;
 import unicorns.backend.service.ClassService;
 import unicorns.backend.util.ApplicationCode;
 import unicorns.backend.util.ApplicationException;
+import unicorns.backend.util.Authorization;
+import unicorns.backend.util.JwtUtil;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,9 +32,18 @@ public class ClassServiceImpl implements ClassService {
     private final ClassRepository classRepository;
     private final UserRepository userRepository;
     private final ClassMemberRepository classMemberRepository;
+    private final JwtUtil jwtUtil;
+    private final Authorization authorization;
 
     @Override
-    public BaseResponse<List<GetClassResponse>> getAllClasses() {
+    public BaseResponse<List<GetClassResponse>> getAllClasses(@RequestHeader("Authorization") String AuthHeader) {
+
+        authorization.isAdmin(AuthHeader);
+        String token = jwtUtil.extractToken(AuthHeader);
+        String role = jwtUtil.extractRole(token);
+        if(!role.equals("admin")){
+            throw new ApplicationException(ApplicationCode.INVALID_ROLE);
+        }
         List<Classes> classes = classRepository.findAll();
 
         List<GetClassResponse> classResponses = classes.stream().map(classEntity -> {
@@ -46,7 +58,15 @@ public class ClassServiceImpl implements ClassService {
     }
 
     @Override
-    public BaseResponse<GetClassResponse> createClass(CreateClassRequest request) {
+    public BaseResponse<GetClassResponse> createClass(@RequestHeader("Authorization") String AuthHeader,
+                                                      CreateClassRequest request) {
+        authorization.isAdmin(AuthHeader);
+
+        String token = jwtUtil.extractToken(AuthHeader);
+        String role = jwtUtil.extractRole(token);
+        if(!role.equals("admin")){
+            throw new ApplicationException(ApplicationCode.INVALID_ROLE);
+        }
 
         Classes newClass = new Classes();
         newClass.setName(request.getName());
@@ -65,7 +85,16 @@ public class ClassServiceImpl implements ClassService {
     }
 
     @Override
-    public BaseResponse<DeleteClassResponse> deleteClass(Long id) {
+    public BaseResponse<DeleteClassResponse> deleteClass(@RequestHeader("Authorization") String AuthHeader,Long id) {
+
+        authorization.isAdmin(AuthHeader);
+
+        String token = jwtUtil.extractToken(AuthHeader);
+        String role = jwtUtil.extractRole(token);
+        if(!role.equals("admin")){
+            throw new ApplicationException(ApplicationCode.INVALID_ROLE);
+        }
+
         Optional<Classes> optionalClass = classRepository.findById(id);
         if (optionalClass.isEmpty()) {
             throw new ApplicationException(ApplicationCode.CLASS_NOT_FOUND);
@@ -86,7 +115,15 @@ public class ClassServiceImpl implements ClassService {
 
     @Override
     @Transactional
-    public BaseResponse<AddStudentToClassResponse> addStudentsToClass(Long classId, AddStudentToClassRequest request) {
+    public BaseResponse<AddStudentToClassResponse> addStudentsToClass(@RequestHeader("Authorization") String AuthHeader,
+                                                                      Long classId, AddStudentToClassRequest request) {
+        authorization.isAdmin(AuthHeader);
+
+        String token = jwtUtil.extractToken(AuthHeader);
+        String role = jwtUtil.extractRole(token);
+        if(!role.equals("admin")){
+            throw new ApplicationException(ApplicationCode.INVALID_ROLE);
+        }
         Classes clazz = classRepository.findById(classId)
                 .orElseThrow(() -> new ApplicationException(ApplicationCode.CLASS_NOT_FOUND));
 
@@ -118,7 +155,15 @@ public class ClassServiceImpl implements ClassService {
 
         @Override
         @Transactional
-        public BaseResponse<RemoveStudentsFromClassResponse> removeStudentsFromClass(Long classId, RemoveStudentsFromClassRequest request) {
+        public BaseResponse<RemoveStudentsFromClassResponse> removeStudentsFromClass(@RequestHeader("Authorization") String AuthHeader,
+                                                                                     Long classId, RemoveStudentsFromClassRequest request) {
+            authorization.isAdmin(AuthHeader);
+
+            String token = jwtUtil.extractToken(AuthHeader);
+            String role = jwtUtil.extractRole(token);
+            if(!role.equals("admin")){
+                throw new ApplicationException(ApplicationCode.INVALID_ROLE);
+            }
             Classes clazz = classRepository.findById(classId)
                     .orElseThrow(() -> new ApplicationException(ApplicationCode.CLASS_NOT_FOUND));
 

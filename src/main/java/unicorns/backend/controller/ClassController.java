@@ -21,36 +21,38 @@ public class ClassController {
 
     @Operation(summary = "get all classes")
     @GetMapping("/getAllClasses")
-    public BaseResponse<List<GetClassResponse>> getAllClasses() {
-        return classService.getAllClasses();
+    public BaseResponse<List<GetClassResponse>> getAllClasses(@RequestHeader("Authorization") String AuthHeader) {
+        return classService.getAllClasses(AuthHeader);
     }
 
     @Operation(summary = "create class")
     @PostMapping("/CreateClass")
-    public BaseResponse<GetClassResponse> createClass(@RequestBody CreateClassRequest request) {
-        return classService.createClass(request);
+    public BaseResponse<GetClassResponse> createClass(@RequestHeader("Authorization") String AuthHeader,@RequestBody CreateClassRequest request) {
+        return classService.createClass(AuthHeader,request);
     }
 
     @Operation(summary = "delete class")
     @DeleteMapping("/deleteClass/{id}")
-    public BaseResponse<DeleteClassResponse> deleteClass(@PathVariable long id){
-        return classService.deleteClass(id);
+    public BaseResponse<DeleteClassResponse> deleteClass(@RequestHeader("Authorization") String AuthHeader,@PathVariable long id){
+        return classService.deleteClass(AuthHeader,id);
     }
 
     @Operation(summary = "add student to class ")
     @PostMapping("/{id}/members")
     public BaseResponse<AddStudentToClassResponse> addStudentsToClass(
+            @RequestHeader("Authorization") String AuthHeader,
             @PathVariable("id") Long classId,
             @RequestBody AddStudentToClassRequest request) {
-        return classService.addStudentsToClass(classId, request);
+        return classService.addStudentsToClass(AuthHeader,classId, request);
     }
 
     @Operation(summary = "delete member from class")
     @DeleteMapping("/{id}/members")
     public BaseResponse<RemoveStudentsFromClassResponse> removeStudentsFromClass(
+            @RequestHeader("Authorization") String AuthHeader,
             @PathVariable("id") Long classId,
             @RequestBody RemoveStudentsFromClassRequest request) {
-        return classService.removeStudentsFromClass(classId, request);
+        return classService.removeStudentsFromClass(AuthHeader,classId, request);
     }
     @Operation(summary = "get class by id")
     @GetMapping("/{id}")
