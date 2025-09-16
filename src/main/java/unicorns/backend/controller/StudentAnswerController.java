@@ -29,7 +29,7 @@ public class StudentAnswerController {
 
     final StudentAnswerService studentAnswerService;
 
-    @Operation(summary = "Submit quiz answers", description = "Submit multiple answers for a quiz by a student.")
+    @Operation(summary = "Submit exercise answers", description = "Submit multiple answers for a exercise by a student.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Answers submitted successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid input",
