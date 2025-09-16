@@ -12,9 +12,13 @@ public class ExerciseCreateRequest {
     @Size(max = 500)
     private String description;
 
+    private Integer durationMinutes;
+
     @NotEmpty
     private List<QuestionCreateRequest> questions;
 
+    public Integer getDurationMinutes() { return durationMinutes; }
+    public void setDurationMinutes(Integer durationMinutes) { this.durationMinutes = durationMinutes; }
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
     public String getDescription() { return description; }

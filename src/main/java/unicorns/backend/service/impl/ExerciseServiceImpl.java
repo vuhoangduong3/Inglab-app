@@ -38,6 +38,7 @@ public class ExerciseServiceImpl implements ExerciseService {
         Exercise e = new Exercise();
         e.setTitle(req.getTitle());
         e.setDescription(req.getDescription());
+        e.setDurationMinutes(req.getDurationMinutes());
 
         List<QuizQuestion> qEntities = new ArrayList<>();
         for (QuestionCreateRequest qReq : req.getQuestions()) {
@@ -81,7 +82,7 @@ public class ExerciseServiceImpl implements ExerciseService {
         Exercise saved = exerciseRepository.save(e);
 
         int total = (saved.getQuestions() == null) ? 0 : saved.getQuestions().size();
-        ExerciseMetaResponse meta = new ExerciseMetaResponse(saved.getId(), saved.getTitle(), saved.getDescription(), total);
+        ExerciseMetaResponse meta = new ExerciseMetaResponse(saved.getId(), saved.getTitle(), saved.getDescription(), total, saved.getDurationMinutes());
         BaseResponse<ExerciseMetaResponse> response =
                 new BaseResponse<>(ApplicationCode.SUCCESS);
         response.setWsResponse(meta);
@@ -97,7 +98,7 @@ public class ExerciseServiceImpl implements ExerciseService {
 
         for (Exercise e : entities) {
             int total = (e.getQuestions() == null) ? 0 : e.getQuestions().size();
-            result.add(new ExerciseMetaResponse(e.getId(), e.getTitle(), e.getDescription(), total));
+            result.add(new ExerciseMetaResponse(e.getId(), e.getTitle(), e.getDescription(), total, e.getDurationMinutes()));
         }
         BaseResponse<List<ExerciseMetaResponse>> response = new BaseResponse<>(ApplicationCode.SUCCESS);
         response.setWsResponse(result);
@@ -124,7 +125,7 @@ public class ExerciseServiceImpl implements ExerciseService {
         }
 
         ExerciseDetailResponse detail =
-                new ExerciseDetailResponse(e.getId(), e.getTitle(), e.getDescription(), qrs);
+                new ExerciseDetailResponse(e.getId(), e.getTitle(), e.getDescription(), qrs, e.getDurationMinutes());
 
         BaseResponse<ExerciseDetailResponse> response = new BaseResponse<>(ApplicationCode.SUCCESS);
         response.setWsResponse(detail);
