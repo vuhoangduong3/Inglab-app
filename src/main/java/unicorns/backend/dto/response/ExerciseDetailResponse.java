@@ -7,15 +7,20 @@ public class ExerciseDetailResponse {
     private String title;
     private String description;
     private List<QuestionResponse> questions;
+    private Integer durationMinutes;
 
     public ExerciseDetailResponse() {}
 
-    public ExerciseDetailResponse(Long id, String title, String description, List<QuestionResponse> questions) {
+    public ExerciseDetailResponse(Long id, String title, String description, List<QuestionResponse> questions, Integer durationMinutes) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.questions = questions;
+        this.durationMinutes = durationMinutes;
     }
+
+    public Integer getDurationMinutes() { return durationMinutes; }
+    public void setDurationMinutes(Integer durationMinutes) { this.durationMinutes = durationMinutes; }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

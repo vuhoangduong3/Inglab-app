@@ -5,16 +5,20 @@ public class ExerciseMetaResponse {
     private String title;
     private String description;
     private int totalQuestions;
+    private Integer durationMinutes;
 
     public ExerciseMetaResponse() {}
 
-    public ExerciseMetaResponse(Long id, String title, String description, int totalQuestions) {
+    public ExerciseMetaResponse(Long id, String title, String description, int totalQuestions, Integer durationMinutes) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.totalQuestions = totalQuestions;
+        this.durationMinutes = durationMinutes;
     }
 
+    public Integer getDurationMinutes() { return durationMinutes; }
+    public void setDurationMinutes(Integer durationMinutes) { this.durationMinutes = durationMinutes; }
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getTitle() { return title; }
