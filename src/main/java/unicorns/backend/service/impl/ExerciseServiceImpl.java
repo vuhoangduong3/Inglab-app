@@ -29,11 +29,11 @@ public class ExerciseServiceImpl implements ExerciseService {
     @Override
     @Transactional
     public BaseResponse<ExerciseMetaResponse> create(ExerciseCreateRequest req) {
-        if (req == null) throw new IllegalArgumentException("Request rỗng.");
+        if (req == null) throw new IllegalArgumentException("no request.");
         if (req.getTitle() == null || req.getTitle().trim().isEmpty())
-            throw new IllegalArgumentException("Title không được trống.");
+            throw new IllegalArgumentException("Title khong dc trong.");
         if (req.getQuestions() == null || req.getQuestions().isEmpty())
-            throw new IllegalArgumentException("Exercise cần ít nhất 1 câu hỏi.");
+            throw new IllegalArgumentException("Exercise can it nhat 1 cau hoi.");
 
         Exercise e = new Exercise();
         e.setTitle(req.getTitle());
@@ -42,11 +42,11 @@ public class ExerciseServiceImpl implements ExerciseService {
 
         List<QuizQuestion> qEntities = new ArrayList<>();
         for (QuestionCreateRequest qReq : req.getQuestions()) {
-            if (qReq == null) throw new IllegalArgumentException("Question không hợp lệ.");
+            if (qReq == null) throw new IllegalArgumentException("Question khong hop le.");
             if (qReq.getText() == null || qReq.getText().trim().isEmpty())
-                throw new IllegalArgumentException("Question.text không được trống.");
+                throw new IllegalArgumentException("Question.text khong duoc trong.");
             if (qReq.getOptions() == null || qReq.getOptions().size() < 2)
-                throw new IllegalArgumentException("Mỗi câu hỏi cần >= 2 phương án.");
+                throw new IllegalArgumentException("Question can >= 2 option.");
 
             boolean hasCorrect = false;
 
@@ -56,9 +56,9 @@ public class ExerciseServiceImpl implements ExerciseService {
 
             List<QuizOption> oEntities = new ArrayList<>();
             for (OptionCreateRequest oReq : qReq.getOptions()) {
-                if (oReq == null) throw new IllegalArgumentException("Option không hợp lệ.");
+                if (oReq == null) throw new IllegalArgumentException("Option khong hop le.");
                 if (oReq.getText() == null || oReq.getText().trim().isEmpty())
-                    throw new IllegalArgumentException("Option.text không được trống.");
+                    throw new IllegalArgumentException("Option.text khong dc trong.");
 
                 QuizOption oEntity = new QuizOption();
                 oEntity.setText(oReq.getText());
@@ -71,7 +71,7 @@ public class ExerciseServiceImpl implements ExerciseService {
             }
 
             if (!hasCorrect)
-                throw new IllegalArgumentException("Mỗi câu hỏi phải có ít nhất 1 đáp án đúng.");
+                throw new IllegalArgumentException("Moi cau hoi phai co it nhat 1 dap an dung.");
 
             qEntity.setOptions(oEntities);
             qEntities.add(qEntity);
