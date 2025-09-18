@@ -167,6 +167,8 @@ public class ScheduleServiceImpl implements ScheduleService {
         baseResponse.setWsResponse(schedules);
         return baseResponse;
     }
+
+    @Override
     public BaseResponse<List<ScheduleInfoResponse>> getCurrentUserResponse(@RequestHeader("Authorization") String AuthHeader){
         if(AuthHeader == null || AuthHeader.isBlank()){
             throw new ApplicationException(ApplicationCode.INVALID_TOKEN);
@@ -183,6 +185,8 @@ public class ScheduleServiceImpl implements ScheduleService {
                 throw new ApplicationException(ApplicationCode.INVALID_ROLE);
         }
     }
+
+    @Override
     public BaseResponse<List<StudentInfoResponse>> getStudentInSchedule(@RequestHeader("Authorization") String AuthHeader,
                                                                  long ScheduleId){
         if(AuthHeader == null || AuthHeader.isBlank()){

@@ -12,13 +12,13 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 import unicorns.backend.dto.request.BaseRequest;
 import unicorns.backend.dto.request.CreateUserRequest;
+import unicorns.backend.dto.request.GetStudentsByNameRequest;
 import unicorns.backend.dto.request.UpdateProfileRequest;
-import unicorns.backend.dto.response.BaseResponse;
-import unicorns.backend.dto.response.CreateUserResponse;
-import unicorns.backend.dto.response.GetProfileResponse;
-import unicorns.backend.dto.response.UpdateProfileResponse;
+import unicorns.backend.dto.response.*;
 import unicorns.backend.service.UserService;
 import unicorns.backend.util.Const;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(Const.PREFIX_USER_V1)
@@ -62,9 +62,14 @@ public class UserController {
 
     @Operation(summary = "get profile")
     @GetMapping("me/getProfile")
-    public BaseResponse<GetProfileResponse> getProfile(@RequestHeader("Authorization") String AuthHader){
-        return userService.getProfile(AuthHader);
+    public BaseResponse<GetProfileResponse> getProfile(@RequestHeader("Authorization") String AuthHeader){
+        return userService.getProfile(AuthHeader);
     }
 
+    @Operation(summary = "search students by name")
+    @GetMapping("search/student/byName")
+    public BaseResponse<List<GetStudentsByNameResponse>> getStudentByName(@RequestBody BaseRequest<GetStudentsByNameRequest> request){
+        return userService.getStudentsByName(request);
+    }
 }
 

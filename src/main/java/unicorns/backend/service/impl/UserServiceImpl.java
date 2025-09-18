@@ -1,6 +1,7 @@
 package unicorns.backend.service.impl;
 
-import unicorns.backend.dto.response.GetProfileResponse;
+import unicorns.backend.dto.request.GetStudentsByNameRequest;
+import unicorns.backend.dto.response.*;
 import unicorns.backend.util.JwtUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -13,9 +14,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import unicorns.backend.dto.request.BaseRequest;
 import unicorns.backend.dto.request.CreateUserRequest;
 import unicorns.backend.dto.request.UpdateProfileRequest;
-import unicorns.backend.dto.response.BaseResponse;
-import unicorns.backend.dto.response.CreateUserResponse;
-import unicorns.backend.dto.response.UpdateProfileResponse;
 import unicorns.backend.entity.User;
 import unicorns.backend.repository.UserRepository;
 import unicorns.backend.service.UserService;
@@ -132,6 +130,8 @@ public class UserServiceImpl implements UserService {
         response.setWsResponse(UpdateProfileResponse.from(user));
         return response;
     }
+
+    @Override
     public BaseResponse<GetProfileResponse> getProfile(@RequestHeader("Authorization") String AuthHeader){
         if(AuthHeader == null || AuthHeader.isBlank()){
             throw new ApplicationException(ApplicationCode.INVALID_TOKEN);
@@ -145,6 +145,21 @@ public class UserServiceImpl implements UserService {
         BeanUtils.copyProperties(user,getProfileResponse);
         BaseResponse<GetProfileResponse> response = new BaseResponse<>(ApplicationCode.SUCCESS);
         response.setWsResponse(getProfileResponse);
+        return response;
+    }
+
+    @Override
+    public BaseResponse<List<GetStudentsByNameResponse>> getStudentsByName(BaseRequest<GetStudentsByNameRequest> request){
+        String name = request.getWsRequest().getName();
+        List<User> Students = userRepository.findByRoleAndNameContainingIgnoreCase("student", name);
+        List<GetStudentsByNameResponse> responses = Students.stream().map(user -> {
+            GetStudentsByNameResponse res = new GetStudentsByNameResponse();
+            res.setId(user.getId());
+            res.setName(user.getName());
+            return res;
+        }).toList();
+        BaseResponse<List<GetStudentsByNameResponse>> response = new BaseResponse<>(ApplicationCode.SUCCESS);
+        response.setWsResponse(responses);
         return response;
     }
 }

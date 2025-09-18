@@ -4,11 +4,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.RequestHeader;
 import unicorns.backend.dto.request.BaseRequest;
 import unicorns.backend.dto.request.CreateUserRequest;
+import unicorns.backend.dto.request.GetStudentsByNameRequest;
 import unicorns.backend.dto.request.UpdateProfileRequest;
-import unicorns.backend.dto.response.BaseResponse;
-import unicorns.backend.dto.response.CreateUserResponse;
-import unicorns.backend.dto.response.GetProfileResponse;
-import unicorns.backend.dto.response.UpdateProfileResponse;
+import unicorns.backend.dto.response.*;
+
+import java.util.List;
 
 public interface UserService {
     BaseResponse<CreateUserResponse> createUser(@RequestHeader("Authorization") String AuthHeader,
@@ -16,4 +16,5 @@ public interface UserService {
     BaseResponse<CreateUserResponse> getAllUser(@RequestHeader("Authorization") String AuthHeader);
     BaseResponse<UpdateProfileResponse> updateProfile(BaseRequest<UpdateProfileRequest> request);
     BaseResponse<GetProfileResponse> getProfile(@RequestHeader("Authorization") String AuthHeader);
+    BaseResponse<List<GetStudentsByNameResponse>> getStudentsByName(BaseRequest<GetStudentsByNameRequest> request);
 }
