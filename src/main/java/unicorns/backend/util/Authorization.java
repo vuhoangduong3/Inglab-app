@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class Authorization {
 
-    private static  JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
     public void isAdmin(String AuthHeader){
 
