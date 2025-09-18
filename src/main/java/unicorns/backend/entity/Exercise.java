@@ -14,11 +14,14 @@ public class Exercise extends BaseEntity {
     private String description;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "exercise_id") // FK ở bảng question_quiz
+    @JoinColumn(name = "exercise_id")
     private List<QuizQuestion> questions = new ArrayList<>();
 
-    ///public Long getId() {return Id; }
-    ///public void setId(Long Id)  {this.Id = Id;}
+    @Column(name = "duration_minutes")
+    private Integer durationMinutes;
+
+    public Integer getDurationMinutes() { return durationMinutes; }
+    public void setDurationMinutes(Integer durationMinutes) { this.durationMinutes = durationMinutes; }
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
     public String getDescription() { return description; }
